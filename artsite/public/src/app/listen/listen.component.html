@@ -1,0 +1,14 @@
+<table>
+  <span *ngIf = 'musicdata'>
+      <tr *ngFor = 'let music of musicdata.items'>
+            <td *ngIf = 'music.preview_url'>
+                {{ music.name }}
+              </td>
+              <td *ngIf = 'music.preview_url'><audio controls>
+                <source src="{{music.preview_url}}" type="audio/mpeg">
+              Your browser does not support the audio element.
+              </audio> 
+            </td>
+      </tr>
+  </span>
+</table>

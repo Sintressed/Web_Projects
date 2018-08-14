@@ -1,0 +1,9 @@
+<h1>Electro Swing</h1>
+<button (click) = 'signshow()'>Sign in</button>
+<div id = 'sign' *ngIf = 'form'>
+    <form (submit) = 'onSubmit(form)' #form = 'ngForm'>
+        <input type = 'text' name =  'username' [(ngModel)] = 'user.username'>
+        <input type = 'password' name = 'password' [(ngModel)] = 'user.password'>
+        <button type = 'submit'>Admin Sign In</button>
+    </form>
+</div>

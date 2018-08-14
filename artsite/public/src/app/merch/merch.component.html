@@ -1,0 +1,22 @@
+
+<div *ngIf = 'show === 2'>
+  <form (submit) = 'merchSubmit(form)' #form = 'ngForm'>
+    Name: <input type = 'text' name = 'name' [(ngModel)] = 'merch.name'>
+    Price: <input type = 'number' name = 'price' [(ngModel)] = 'merch.price'>
+    Photo: <input type="file" name="photo" ng2FileSelect [uploader]="uploader">
+    <!-- button to trigger the file upload when submitted -->
+    <button type="submit" class="btn btn-success btn-s" (click)="uploader.uploadAll()" [disabled]="!uploader.getNotUploadedItems().length || form.invalid">
+      Add Merch
+    </button>
+  </form>
+</div>
+<table *ngIf = 'merchdata'>
+  <tr *ngFor = 'let dat of merchdata[0]'>
+    <td>
+      <img src = '/assets/static/{{dat.img}}' width = '50' height = '50' ></td>
+    <td>{{dat.name}}</td>
+    <td>{{dat.price}}</td>
+    <td *ngIf = 'show === 1'><button (click) = 'buyMerch(dat.name)'>Buy Now</button></td>
+    <td *ngIf = 'show === 2'><button (click) = 'delMerch(dat._id)'>Delete</button></td>
+  </tr>
+</table>
