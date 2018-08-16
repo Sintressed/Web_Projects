@@ -16,11 +16,11 @@ export class MerchComponent implements OnInit {
     name: '',
     price: Number,
     img: '',
-    num: '',
   }
   constructor(private _task: TaskService,private renderer: Renderer) { }
   public uploader:FileUploader = new FileUploader({url: URL, itemAlias: 'photo'});
-  buyMerch(id){
+
+  buyMerch(id){//opens stripe payment
     console.log('buying merch')
     var handler = (<any>window).StripeCheckout.configure({
       key: 'pk_test_UDcqn2KWjGC1TwbZMV5dJ1e6',
@@ -42,35 +42,37 @@ export class MerchComponent implements OnInit {
   }
   merchSubmit(formData){
     //override the onAfterAddingfile property of the uploader so it doesn't authenticate with //credentials.
+    console.log(this.merch)
     this.uploader.onAfterAddingFile = (file)=> { file.withCredentials = false; };
     //overide the onCompleteItem property of the uploader so we are 
     //able to deal with the server response.
     this.uploader.onCompleteItem = (item:any, response:any, status:any, headers:any) => {
-      console.log('done')
+      console.log('complete:',this.merch)
       let str = response.slice(1, -1);
       this.merch.img = str;
-      console.log('merch is:', this.merch)
-      this._task.addMerc(this.merch);
+      this._task.addItem('merch',this.merch);
     };
   }
   delMerch(id){
+    console.log('deleting merch')
     this._task.delItem('merch',id)
   }
   ngOnInit() {
     this._task.checkSession().subscribe(data =>{
+      console.log('checking session')
       if(data === 'yes'){
         this.show = 2
       }
       this.show = 2
     })
-    this._task.getMerch().subscribe(data =>{
-      
-      this.merchdata = [data];
-      console.log(this.merchdata)
+    this._task.getItem('merch').subscribe(data =>{
+      console.log('getting merch')
+      this.merchdata = data;
     })
-    this._task.data.subscribe(
+    this._task.merchData.subscribe(
       data =>{
-        this.merchdata = data;
+        console.log('updating merch')
+        this.merchdata = data[0];
       }
     )
 

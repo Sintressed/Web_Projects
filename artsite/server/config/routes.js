@@ -5,21 +5,6 @@ module.exports = function(app){
     app.post('/api/upload',function(req,res){
         users.uploading(req,res);
     })
-    app.post('/addMerch', function(req,res){
-        users.addMerch(req,res);
-    })
-    app.post('/getMerch', function(req,res){
-        users.getMerch(req,res);
-    })
-    app.post('/addTour', function(req,res){
-        users.addTour(req,res);
-    })
-    app.post('/getTour', function(req,res){
-        users.getTour(req,res);
-    })
-    app.post('/getMusic', function(req,res){
-        users.getMusic(req,res)
-    })
     app.post('/pass', function(req,res){
         users.pass(req,res)
     })
@@ -29,7 +14,16 @@ module.exports = function(app){
     app.post('/checkSession', function(req,res){
         users.checkSession(req,res)
     })
+
+     // *** Data functions *** //
+     
+    app.post('/addItem', function(req,res){
+        users.addItem(req,res)
+    })
     app.post('/delItem', function(req,res){
         users.delItem(req,res)
+    })
+    app.post('/getItem', function(req,res){
+        users.getItem(req,res)
     })
 }

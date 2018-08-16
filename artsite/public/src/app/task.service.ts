@@ -2,14 +2,15 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 //import { Observable } from 'rxjs/Observable';
 //import { SpotifyService } from './spotify.service';
-import { Observable } from 'rxjs';
+import { Observable, ObjectUnsubscribedError } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  data: BehaviorSubject<any[]> = new BehaviorSubject([])
+  merchData: BehaviorSubject<any[]> = new BehaviorSubject([])
+  tourData: BehaviorSubject<any[]> = new BehaviorSubject([])
   cart = [];
   constructor(private _http: HttpClient) { }
   searchStr: String;
@@ -17,29 +18,7 @@ export class TaskService {
     console.log('getting music task')
     return this._http.post('/getMusic', 'music');
   }
-  addMerc(item){
-    this._http.post('/addMerch', item).subscribe(data =>{
-      console.log(data)
-    })
-    this._http.post('/getMerch', 'hello').subscribe(
-      thing =>{
-        const tempData = this.data.getValue();
-        tempData.pop()
-        tempData.push(thing)
-        console.log(tempData)
-        this.data.next(tempData)
-      }
-    )
-  }
-  getMerch(){
-    return this._http.post('/getMerch', 'Merch');
-  }
-  addTour(item){
-    return this._http.post('/addTour', item);
-  }
-  getTour(){
-    return this._http.post('/getTour','Tour');
-  }
+
   pass(pass){
     return this._http.post('/pass', pass);
   }
@@ -49,19 +28,50 @@ export class TaskService {
   checkSession(){
     return this._http.post('/checkSession','sess' );
   }
-  delItem(call,item){
-    this._http.post('/delItem', {call,item}).subscribe(data =>{
-      console.log(data)
+
+   // *** Data functions *** //
+
+   observeData(call){//chooses what observable to save/update
+    console.log('task: setting observable ', call)
+    let x;
+    if(call === 'merch'){
+      x = this.merchData;
+    }
+    else if(call === 'tour'){
+      x = this.tourData
+    }
+    this._http.post('/getItem', {item: call}).subscribe(
+      thing =>{
+        const tempData = x.getValue();
+        tempData.pop()
+        tempData.push(thing)
+        x.next(tempData)
+      }
+    )
+  }
+  addItem(item, data){
+    console.log('task: adding ', item, 'data: ', data)
+    this._http.post('/addItem', {item: item, data: data}).subscribe(data =>{
+      console.log('add data: ',data)
     })
-    // this._http.post('/getMerch', 'hello').subscribe(
-    //   thing =>{
-    //     const tempData = this.data.getValue();
-    //     tempData.pop()
-    //     tempData.push(thing)
-    //     console.log(tempData)
-    //     this.data.next(tempData)
-    //   }
-    // )
+    this.observeData(item);
+  }
+  getItem(item){
+    console.log('task: getting ', item)
+    return this._http.post('/getItem', {item: item});
+  }
+  delItem(call,item){
+    console.log('task: deleting ', call)
+    let x; //determines what data subscription updates
+    this._http.post('/delItem', {call,item}).subscribe(data =>{
+      if(call === 'merch'){
+        x = this.merchData
+      }
+      else if(call == 'tour'){
+        x = this.tourData
+      }
+      this.observeData(call)
+    })
   }
 
 

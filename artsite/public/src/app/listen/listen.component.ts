@@ -11,7 +11,7 @@ export class ListenComponent implements OnInit {
   constructor(private _task: TaskService) { }
 
   ngOnInit() {
-    this._task.searchMusic().subscribe(data =>{
+    this._task.getItem('music').subscribe(data =>{
       console.log(data)
       this.musicdata = data
     })

@@ -28,7 +28,7 @@ spotifyApi.clientCredentialsGrant().then(
       );
     }
   )
-
+//sets spotify acess token
 setInterval(function() {  
     spotifyApi.clientCredentialsGrant().then(
         function(data) {
@@ -58,56 +58,6 @@ module.exports = {
            path = req.file.path;
            return res.json(req.file.filename); 
      }); 
-    },
-    addMerch: function(req,res){
-        Merch.create(req.body)
-        .then(data =>{
-            res.json(data)
-        })
-        .catch(err =>{
-            res.json(err)
-        })
-    },
-    getMerch: function(req,res){
-        console.log('gettong mer')
-        Merch.find({})
-        .then(data =>{
-            console.log(data)
-            res.json(data)
-        })
-        .catch(err =>{
-            console.log(err)
-            res.json(err)
-        })
-    },
-    addTour: function(req,res){
-        Tour.create(req.body)
-        .then(data =>{
-            res.json(data);
-        })
-        .catch(err =>{
-            res.json(err)
-        })
-    },
-    getTour: function(req,res){
-        Tour.find({})
-        .then(data =>{
-            res.json(data)
-        })
-        .catch(err =>{
-            res.json(err)
-        })
-    },
-    getMusic: function(req,res){
-        spotifyApi.getAlbumTracks('5VdZtfz1z6v1qWlqCU9j1E',{ limit : 17, offset : 0}).then(
-            function(data) {
-                console.log(data.body)
-              res.json(data.body);
-            },
-            function(err) {
-              res.json(err)
-            }
-          );
     },
     changepass: function(req,res){
         bcrypt.hash(req.body.password, 10)
@@ -176,15 +126,80 @@ module.exports = {
             res.json('nope')
         }
     },
+
+    // *** Data functions *** //
+
+    addItem: function(req,res){
+        if(req.body.item === 'merch'){
+            x = Merch
+        }
+        else if(req.body.item === 'tour'){
+            x = Tour
+        }
+        x.create(req.body.data)
+        .then(data =>{
+            res.json(data)
+        })
+        .catch(err =>{
+            res.json(err)
+        })
+    },
+    getItem: function(req,res){
+        console.log('req.body.item is: ',req.body.item)
+        let x;
+        if(req.body.item === 'merch' || req.body.item === 'tour'){
+            if(req.body.item === 'merch'){
+                x = Merch
+            }
+            else if(req.body.item === 'tour'){
+                x = Tour
+            }
+            x.find({})
+            .then(data =>{
+                res.json(data)
+            })
+            .catch(err =>{
+                res.json(err)
+            })
+        }
+        else if(req.body.item === 'music'){
+            spotifyApi.getAlbumTracks('5VdZtfz1z6v1qWlqCU9j1E',{ limit : 17, offset : 0}).then(
+                function(data) {
+                    console.log(data.body)
+                    res.json(data.body);
+                },
+                function(err) {
+                    res.json(err)
+                }
+            );
+        }
+        else{
+            res.json({err: req.body.item})
+        }
+    },
     delItem: function(req,res){
         if(req.body.call === 'merch'){
             Merch.findById({_id: req.body.item})
             .then(data =>{
-                console.log(DIR + data.img)
-                fs.unlink(DIR + '/' + data.img, (err) => {
-                    if (err) {res.json(err)};
-                    console.log('path/file.txt was deleted');
-                  });
+                const fs = require('fs');
+                console.log(req.body.item)
+                Merch.deleteOne({_id: req.body.item})
+                .then(data =>{
+                    res.json(data)
+                })
+                .catch(err =>{
+                    res.json(err)
+                })
+                fs.access(DIR + data.img, error => {
+                    if (!error) {
+                        console.log('working so far')
+                        fs.unlink(DIR + data.img,function(error){
+                            console.log(error);
+                        });
+                    } else {
+                        console.log(error);
+                    }
+                });
             })
             .catch(err =>{
                 res.json(err)

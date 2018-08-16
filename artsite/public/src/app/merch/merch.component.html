@@ -11,7 +11,7 @@
   </form>
 </div>
 <table *ngIf = 'merchdata'>
-  <tr *ngFor = 'let dat of merchdata[0]'>
+  <tr *ngFor = 'let dat of merchdata'>
     <td>
       <img src = '/assets/static/{{dat.img}}' width = '50' height = '50' ></td>
     <td>{{dat.name}}</td>

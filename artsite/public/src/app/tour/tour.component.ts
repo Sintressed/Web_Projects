@@ -26,22 +26,19 @@ export class TourComponent implements OnInit {
   tourSubmit(tourData){
     this.tour.location = this.tourloc.city + ',' + this.tourloc.state;
     console.log(this.tour)
-    this._task.addTour(this.tour).subscribe(data =>{
-      console.log(data)
-    })
+    this._task.addItem('tour',this.tour);
   }
   touredit(id){
-    this._task.delItem('tour',id).subscribe(data =>{
-      console.log(data)
-    })
+    this._task.delItem('tour',id);
   }
   ngOnInit() {
     this._task.checkSession().subscribe(data =>{
       if(data === 'yes'){
         this.show = 2
       }
+      this.show = 2
     })
-    this._task.getTour().subscribe(data =>{
+    this._task.getItem('tour').subscribe(data =>{
       this.tourdata = data;
     })
 
